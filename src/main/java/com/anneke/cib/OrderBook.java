@@ -29,31 +29,29 @@ public class OrderBook {
     /**
      * Used Multitone pattern with Lazy Initialization to ensure only limited number of instances to be created. Notice:
      * Not thread safe operation.
-     *
-     * @param bookID acceptable order books IDs
-     * @return OrderBook instance with specified ID
      */
     public static OrderBook getOrderBookById(String bookID) {
         OrderBook book;
         if (!orderBooks.containsKey(bookID)) {
             book = new OrderBook(bookID);
             orderBooks.put(bookID, book);
-            
+
         } else {
             return orderBooks.get(bookID);
         }
         return book;
     }
 
-   private void addSellOrder(Order order) {
-       sellOrders.add(order);
-       orderMap.put(order.getOrderID(), order);
-   }
-   
-   private void addBuyOrder(Order order) {
-       buyOrders.add(order);
-       orderMap.put(order.getOrderID(), order);
-   }
+    private void addSellOrder(Order order) {
+        sellOrders.add(order);
+        orderMap.put(order.getOrderID(), order);
+    }
+
+    private void addBuyOrder(Order order) {
+        buyOrders.add(order);
+        orderMap.put(order.getOrderID(), order);
+    }
+
     private void matchSellOrder(Order order) {
         double sellPrice = order.getPrice();
         int orderVolume = order.getVolume();
@@ -65,12 +63,9 @@ public class OrderBook {
                 deleteOrder(firstBuyOrder);
             } else {
                 buyOrderVolume -= orderVolume;
-                //Order newBuyOrder = buyOrders.pollFirst();
-                //deleteOrder(newBuyOrder);
                 buyOrders.remove(firstBuyOrder);
                 firstBuyOrder.setVolume(buyOrderVolume);
                 buyOrders.add(firstBuyOrder);
-                //addBuyOrder(newBuyOrder);
                 orderVolume = 0;
             }
         }
@@ -84,19 +79,16 @@ public class OrderBook {
         double buyPrice = order.getPrice();
         int orderVolume = order.getVolume();
         while (!sellOrders.isEmpty() && sellOrders.first().getPrice() <= buyPrice && orderVolume > 0) {
-            Order firstSellOrder = sellOrders.first(); 
+            Order firstSellOrder = sellOrders.first();
             int sellOrderVolume = firstSellOrder.getVolume();
             if (sellOrderVolume <= orderVolume) {
                 orderVolume -= sellOrderVolume;
                 deleteOrder(firstSellOrder);
             } else {
-                sellOrderVolume -= orderVolume;                
-                //Order newSellOrder = sellOrders.pollFirst();
-                //deleteOrder(firstSellOrder);
+                sellOrderVolume -= orderVolume;
                 sellOrders.remove(firstSellOrder);
                 firstSellOrder.setVolume(sellOrderVolume);
                 sellOrders.add(firstSellOrder);
-                //addSellOrder(newSellOrder);
                 orderVolume = 0;
             }
         }
